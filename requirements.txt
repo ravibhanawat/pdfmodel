@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+langchain
+langchain-community
+PyPDF2
+pdfplumber
+sentence-transformers
+chromadb
+numpy
+python-dotenv
+pydantic
+aiofiles
+pydantic-settings
