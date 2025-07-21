@@ -1,4 +1,4 @@
-# API Documentation
+# PDFModel - API Documentation
 
 ## Base URL
 ```

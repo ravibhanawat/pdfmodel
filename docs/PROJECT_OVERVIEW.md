@@ -1,8 +1,8 @@
-# Project Overview
+# PDFModel - Project Overview
 
 ## 📋 Executive Summary
 
-The PDF Question-Answering Application is a full-stack web application that enables users to upload PDF documents and ask natural language questions about their content. Built using modern web technologies and artificial intelligence, the system provides intelligent, context-aware responses by leveraging Retrieval Augmented Generation (RAG) techniques.
+PDFModel is a full-stack web application that enables users to upload PDF documents and ask natural language questions about their content. Built using modern web technologies and artificial intelligence, the system provides intelligent, context-aware responses by leveraging Retrieval Augmented Generation (RAG) techniques.
 
 ## 🎯 Project Goals
 
