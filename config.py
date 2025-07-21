@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """Application settings with environment variable support."""
     
     # Application settings
-    app_name: str = Field(default="PDF Question-Answering API", description="Application name")
+    app_name: str = Field(default="PDFModel API", description="Application name")
     app_version: str = Field(default="1.0.0", description="Application version")
     debug: bool = Field(default=False, description="Debug mode")
     

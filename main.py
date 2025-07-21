@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="PDF Question-Answering API",
+    title="PDFModel API",
     description="A FastAPI application for uploading PDFs and asking questions about their content using RAG",
     version="1.0.0"
 )

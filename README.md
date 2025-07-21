@@ -1,4 +1,4 @@
-# PDF Question-Answering Application
+# PDFModel - PDF Question-Answering Application
 
 A complete full-stack application for uploading PDF files and asking questions about their content using RAG (Retrieval Augmented Generation). Built with FastAPI backend, modern JavaScript frontend, and powered by AI embeddings.
 
@@ -52,7 +52,7 @@ A complete full-stack application for uploading PDF files and asking questions a
 ## 📁 Project Structure
 
 ```
-pdf-qa-app/
+pdfmodel/
 ├── main.py                 # FastAPI application entry point
 ├── config.py              # Configuration settings
 ├── logger_config.py       # Logging configuration
@@ -78,8 +78,9 @@ pdf-qa-app/
 ### 1. Installation
 
 ```bash
-# Clone or create the project directory
-mkdir pdf-qa-app && cd pdf-qa-app
+# Clone the project
+git clone https://github.com/ravibhanawat/pdfmodel.git
+cd pdfmodel
 
 # Install Python dependencies
 pip install -r requirements.txt
