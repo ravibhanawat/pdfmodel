@@ -151,11 +151,11 @@ python main.py
 ### **Production**
 ```bash
 # Docker deployment
-docker build -t pdf-qa-app .
-docker run -p 8000:8000 pdf-qa-app
+docker build -t pdfmodel .
+docker run -p 8000:8000 pdfmodel
 
 # Traditional server
-systemctl start pdf-qa-app
+systemctl start pdfmodel
 nginx -s reload
 ```
 

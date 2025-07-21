@@ -31,7 +31,7 @@
 ## 📁 Project Structure
 
 ```
-pdf-qa-app/
+pdfmodel/
 ├── main.py                 # FastAPI application entry point
 ├── config.py              # Configuration management
 ├── logger_config.py       # Logging setup
@@ -253,7 +253,7 @@ curl -X POST -H "Content-Type: application/json" \
 ### 1. Setup
 ```bash
 # Clone/create project
-git clone <repo> && cd pdf-qa-app
+git clone <repo> && cd pdfmodel
 
 # Create virtual environment
 python -m venv venv

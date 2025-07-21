@@ -39,7 +39,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", 
 version: '3.8'
 
 services:
-  pdf-qa-app:
+  pdfmodel:
     build: .
     ports:
       - "8000:8000"
@@ -68,20 +68,20 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
     depends_on:
-      - pdf-qa-app
+      - pdfmodel
     restart: unless-stopped
 ```
 
 #### Build and Deploy
 ```bash
 # Build the image
-docker build -t pdf-qa-app .
+docker build -t pdfmodel .
 
 # Run with Docker Compose
 docker-compose up -d
 
 # Check logs
-docker-compose logs -f pdf-qa-app
+docker-compose logs -f pdfmodel
 ```
 
 ### 2. Traditional Server Deployment
@@ -103,8 +103,8 @@ sudo yum install python3 python3-pip nginx
 sudo adduser --system --group pdfqa
 
 # Clone application
-sudo -u pdfqa git clone <repo> /opt/pdf-qa-app
-cd /opt/pdf-qa-app
+sudo -u pdfqa git clone <repo> /opt/pdfmodel
+cd /opt/pdfmodel
 
 # Setup virtual environment
 sudo -u pdfqa python3 -m venv venv
@@ -114,23 +114,23 @@ sudo -u pdfqa ./venv/bin/pip install -r requirements.txt
 sudo -u pdfqa mkdir -p uploads chroma_db logs
 
 # Set permissions
-sudo chown -R pdfqa:pdfqa /opt/pdf-qa-app
+sudo chown -R pdfqa:pdfqa /opt/pdfmodel
 ```
 
 #### Systemd Service
 ```ini
-# /etc/systemd/system/pdf-qa-app.service
+# /etc/systemd/system/pdfmodel.service
 [Unit]
-Description=PDF QA Application
+Description=PDFModel Application
 After=network.target
 
 [Service]
 Type=exec
 User=pdfqa
 Group=pdfqa
-WorkingDirectory=/opt/pdf-qa-app
-Environment=PATH=/opt/pdf-qa-app/venv/bin
-ExecStart=/opt/pdf-qa-app/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 4
+WorkingDirectory=/opt/pdfmodel
+Environment=PATH=/opt/pdfmodel/venv/bin
+ExecStart=/opt/pdfmodel/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 4
 Restart=always
 RestartSec=10
 
@@ -145,12 +145,12 @@ WantedBy=multi-user.target
 #### Start Service
 ```bash
 # Enable and start service
-sudo systemctl enable pdf-qa-app
-sudo systemctl start pdf-qa-app
+sudo systemctl enable pdfmodel
+sudo systemctl start pdfmodel
 
 # Check status
-sudo systemctl status pdf-qa-app
-sudo journalctl -u pdf-qa-app -f
+sudo systemctl status pdfmodel
+sudo journalctl -u pdfmodel -f
 ```
 
 ### 3. Cloud Platform Deployment
@@ -198,16 +198,16 @@ yum install -y python3 python3-pip git nginx
 
 # Clone and setup application
 cd /opt
-git clone <repo> pdf-qa-app
-cd pdf-qa-app
+git clone <repo> pdfmodel
+cd pdfmodel
 
 python3 -m venv venv
 ./venv/bin/pip install -r requirements.txt
 
 # Setup systemd service (use service file above)
-cp pdf-qa-app.service /etc/systemd/system/
-systemctl enable pdf-qa-app
-systemctl start pdf-qa-app
+cp pdfmodel.service /etc/systemd/system/
+systemctl enable pdfmodel
+systemctl start pdfmodel
 ```
 
 #### Google Cloud Run
@@ -215,13 +215,13 @@ systemctl start pdf-qa-app
 # cloudbuild.yaml
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/pdf-qa-app', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/pdfmodel', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/pdf-qa-app']
+    args: ['push', 'gcr.io/$PROJECT_ID/pdfmodel']
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
-      'run', 'deploy', 'pdf-qa-app',
-      '--image', 'gcr.io/$PROJECT_ID/pdf-qa-app',
+      'run', 'deploy', 'pdfmodel',
+      '--image', 'gcr.io/$PROJECT_ID/pdfmodel',
       '--region', 'us-central1',
       '--platform', 'managed',
       '--allow-unauthenticated'
@@ -232,7 +232,7 @@ steps:
 
 ### Basic Configuration
 ```nginx
-# /etc/nginx/sites-available/pdf-qa-app
+# /etc/nginx/sites-available/pdfmodel
 server {
     listen 80;
     server_name yourdomain.com;
@@ -285,7 +285,7 @@ server {
 ### Enable Configuration
 ```bash
 # Enable site
-sudo ln -s /etc/nginx/sites-available/pdf-qa-app /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/pdfmodel /etc/nginx/sites-enabled/
 
 # Test configuration
 sudo nginx -t
@@ -363,8 +363,8 @@ async def metrics():
 ### Log Management
 ```bash
 # Logrotate configuration
-# /etc/logrotate.d/pdf-qa-app
-/opt/pdf-qa-app/logs/*.log {
+# /etc/logrotate.d/pdfmodel
+/opt/pdfmodel/logs/*.log {
     daily
     rotate 30
     compress
@@ -372,7 +372,7 @@ async def metrics():
     notifempty
     create 644 pdfqa pdfqa
     postrotate
-        systemctl reload pdf-qa-app
+        systemctl reload pdfmodel
     endscript
 }
 ```
@@ -388,8 +388,8 @@ iotop  # Disk I/O
 nethogs  # Network usage
 
 # Check logs
-sudo journalctl -u pdf-qa-app -f
-tail -f /opt/pdf-qa-app/logs/app.log
+sudo journalctl -u pdfmodel -f
+tail -f /opt/pdfmodel/logs/app.log
 ```
 
 ## 🔄 Backup and Recovery
@@ -399,18 +399,18 @@ tail -f /opt/pdf-qa-app/logs/app.log
 #!/bin/bash
 # backup.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_DIR="/backups/pdf-qa-app"
+BACKUP_DIR="/backups/pdfmodel"
 
 # Create backup directory
 mkdir -p "$BACKUP_DIR/$DATE"
 
 # Backup files
-cp -r /opt/pdf-qa-app/uploads "$BACKUP_DIR/$DATE/"
-cp -r /opt/pdf-qa-app/chroma_db "$BACKUP_DIR/$DATE/"
-cp /opt/pdf-qa-app/documents_metadata.json "$BACKUP_DIR/$DATE/"
+cp -r /opt/pdfmodel/uploads "$BACKUP_DIR/$DATE/"
+cp -r /opt/pdfmodel/chroma_db "$BACKUP_DIR/$DATE/"
+cp /opt/pdfmodel/documents_metadata.json "$BACKUP_DIR/$DATE/"
 
 # Compress
-tar -czf "$BACKUP_DIR/pdf-qa-app-$DATE.tar.gz" -C "$BACKUP_DIR" "$DATE"
+tar -czf "$BACKUP_DIR/pdfmodel-$DATE.tar.gz" -C "$BACKUP_DIR" "$DATE"
 rm -rf "$BACKUP_DIR/$DATE"
 
 # Keep only 30 days of backups
@@ -429,24 +429,24 @@ sudo crontab -e
 #!/bin/bash
 # restore.sh
 BACKUP_FILE=$1
-RESTORE_DIR="/opt/pdf-qa-app"
+RESTORE_DIR="/opt/pdfmodel"
 
 # Stop application
-sudo systemctl stop pdf-qa-app
+sudo systemctl stop pdfmodel
 
 # Extract backup
 tar -xzf "$BACKUP_FILE" -C /tmp/
 
 # Restore files
-cp -r /tmp/pdf-qa-app-*/uploads "$RESTORE_DIR/"
-cp -r /tmp/pdf-qa-app-*/chroma_db "$RESTORE_DIR/"
-cp /tmp/pdf-qa-app-*/documents_metadata.json "$RESTORE_DIR/"
+cp -r /tmp/pdfmodel-*/uploads "$RESTORE_DIR/"
+cp -r /tmp/pdfmodel-*/chroma_db "$RESTORE_DIR/"
+cp /tmp/pdfmodel-*/documents_metadata.json "$RESTORE_DIR/"
 
 # Fix permissions
 sudo chown -R pdfqa:pdfqa "$RESTORE_DIR"
 
 # Start application
-sudo systemctl start pdf-qa-app
+sudo systemctl start pdfmodel
 ```
 
 ## 🚦 Performance Optimization
@@ -529,7 +529,7 @@ def cache_response(expiry=300):
    ```bash
    # Check memory usage
    free -h
-   sudo systemctl status pdf-qa-app
+   sudo systemctl status pdfmodel
    
    # Solutions:
    # - Reduce worker count
@@ -565,11 +565,11 @@ def cache_response(expiry=300):
 ### Log Analysis
 ```bash
 # Check application logs
-grep "ERROR" /opt/pdf-qa-app/logs/app.log
-grep "upload" /opt/pdf-qa-app/logs/app.log | tail -100
+grep "ERROR" /opt/pdfmodel/logs/app.log
+grep "upload" /opt/pdfmodel/logs/app.log | tail -100
 
 # Check system logs
-sudo journalctl -u pdf-qa-app --since "1 hour ago"
+sudo journalctl -u pdfmodel --since "1 hour ago"
 
 # Check nginx logs
 sudo tail -f /var/log/nginx/access.log

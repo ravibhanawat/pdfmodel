@@ -297,8 +297,8 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 Build and run:
 ```bash
-docker build -t pdf-qa-app .
-docker run -p 8000:8000 -v $(pwd)/uploads:/app/uploads pdf-qa-app
+docker build -t pdfmodel .
+docker run -p 8000:8000 -v $(pwd)/uploads:/app/uploads pdfmodel
 ```
 
 ## 🔒 Security Considerations
